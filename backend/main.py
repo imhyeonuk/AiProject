@@ -45,21 +45,21 @@ def capture_and_predict(frame):
     
     prediction_result = {"prediction": prediction}
     # 예측된 숫자를 아두이노로 전송
-    sendArduino(prediction)
+    # sendArduino(prediction)
     
-def sendArduino(prediction) :
-    arduino = serial.Serial('/dev/tty.usbserial-120', 9600)
+# def sendArduino(prediction) :
+#     arduino = serial.Serial('/dev/tty.usbserial-120', 9600)
 
-    if arduino.is_open :
-        print("시리얼 포트가 열려있습니다.")
+#     if arduino.is_open :
+#         print("시리얼 포트가 열려있습니다.")
 
-    else :
-        print("시리얼 포트를 열 수 없습니다.")
-    time.sleep(2)
+#     else :
+#         print("시리얼 포트를 열 수 없습니다.")
+#     time.sleep(2)
 
-    arduino_num = str(prediction) + '\n'
-    arduino.write(arduino_num.encode())
-    arduino.close() 
+#     arduino_num = str(prediction) + '\n'
+#     arduino.write(arduino_num.encode())
+#     arduino.close() 
     
 # 예측 결과를 반환하는 엔드포인트
 @app.get("/prediction")
