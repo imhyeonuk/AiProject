@@ -1,19 +1,298 @@
-/* 하단 사이드바 (주소 표시) */
-.bottomSidebar {
+.control-buttons {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.control-btn {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* BottomSection.css */
+.bottom-container {
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%); /* 가운데 정렬 */
-  background-color: rgba(224, 224, 224, 0.9); /* 투명 배경 */
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 40px 120px 1fr; /* 햄버거 버튼, CO2, 주소 영역 비율 조정 */
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #eee;
+}
+
+/* 햄버거 메뉴 스타일 */
+.hamburger-button {
+  width: 30px; /* 작은 사이즈로 조정 */
+  height: 30px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hamburger-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.hamburger-lines span {
+  display: block;
+  width: 30px; /* 작은 사이즈로 조정 */
+  height: 2px;
+  background-color: #333;
+  transition: all 0.3s ease;
+}
+
+/* CO2 섹션 스타일 */
+.co2-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.co2-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.co2-value {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.co2-value.normal { color: #28a745; }
+.co2-value.warning { color: #ffc107; }
+.co2-value.danger { color: #dc3545; }
+
+.co2-unit {
+  font-size: 10px;
+  color: #999;
+}
+
+/* 주소 섹션 스타일 */
+.address-section {
+  flex-grow: 1; /* 주소 영역 확장 */
+}
+
+.address-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 14px;
   color: #333;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-  max-width: 90%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  z-index: 100; /* 주소 표시가 다른 요소 위에 오도록 설정 */
+  padding: 0 15px;
+  width: 100%;
+}
+
+.address-content i {
+  color: #666;
+  font-size: 14px;
+}
+
+.control-buttons {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* 간격도 좀 더 늘림 */
+  z-index: 1000;
+}
+
+.control-btn {
+  width: 80px; /* 2배로 증가 */
+  height: 80px; /* 2배로 증가 */
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 16px; /* 크기에 맞춰 border-radius도 증가 */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+.control-btn svg {
+  width: 30px; /* 아이콘 크기도 증가 */
+  height: 30px;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.05); /* 호버 효과 추가 */
+  transition: all 0.3s ease;
+}
+
+.bottom-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 80px 240px 1fr; /* 각 섹션 2배로 증가 */
+  height: 100px; /* 높이 2배로 증가 */
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+}
+
+/* 햄버거 메뉴 크기 증가 */
+.hamburger-button {
+  width: 60px;
+  height: 60px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hamburger-lines span {
+  width: 40px;
+  height: 3px;
+}
+
+/* CO2 섹션 폰트 크기 증가 */
+.co2-label {
+  font-size: 24px;
+}
+
+.co2-value {
+  font-size: 32px;
+}
+
+.co2-unit {
+  font-size: 20px;
+}
+
+/* 주소 섹션 폰트 크기 증가 */
+.address-content {
+  font-size: 28px;
+  padding: 0 30px;
+}
+
+.address-content i {
+  font-size: 28px;
+}
+
+.bottom-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 80px 240px 1fr;
+  height: 100px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hamburger-button,
+.co2-display,
+.address-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200%;
+}
+
+.address-content {
+  justify-content: center;
+  padding: 0;
+}
+
+.address-content span {
+  text-align: center;
+}
+
+.bottom-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 80px 360px 1fr; /* CO2 섹션을 360px로 1.5배 증가 */
+  height: 100px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.co2-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.co2-label {
+  font-size: 24px;
+  color: #666;
+}
+
+.co2-value {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.co2-unit {
+  font-size: 20px;
+  color: #999;
+}
+
+.control-btn {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 1);
 }

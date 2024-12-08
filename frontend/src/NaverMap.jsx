@@ -107,7 +107,7 @@ function NaverMap({ drowsyDetected }) {
     if (restStopMarkersRef.current.length > 0) return;
 
     // 휴게소 마커 추가
-    restStops.forEach((stop) => {
+    restStops.forEach((그만) => {
       const marker = new window.naver.maps.Marker({
         map,
         position: new window.naver.maps.LatLng(stop.lat, stop.lng),

@@ -11,6 +11,8 @@ function App() {
   const [playMode, setPlayMode] = useState('alarm');
   const [volumeLevel, setVolumeLevel] = useState(0.5);
   const [popupMessage, setPopupMessage] = useState(''); // popupMessage 상태 추가
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true); // 버튼클릭시 버튼4개 사라지기 켜지기 기능
+  
 
   // 홈버튼 클릭 시 초기화 함수
   const onHomeClick = () => {
@@ -43,6 +45,7 @@ function App() {
         </div>
       )}
 
+<div className="app-container">
       <LeftSidebar
         onHomeClick={onHomeClick}
         isVideoVisible={isVideoVisible}
@@ -51,9 +54,20 @@ function App() {
         setPlayMode={setPlayMode}
         volumeLevel={volumeLevel}
         setVolumeLevel={setVolumeLevel}
+        showLeftSidebar={showLeftSidebar}
       />
 
-<BottomSidebar/>
+      <BottomSidebar 
+        onHomeClick={onHomeClick}
+        isVideoVisible={isVideoVisible}
+        toggleVideoVisibility={toggleVideoVisibility}
+        playMode={playMode}
+        setPlayMode={setPlayMode}
+        setShowLeftSidebar={setShowLeftSidebar}
+      />
+    </div>
+
+    
     </div>
   );
 }

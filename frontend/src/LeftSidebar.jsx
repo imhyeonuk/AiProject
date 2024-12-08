@@ -17,13 +17,14 @@ function LeftSidebar({
   setPlayMode,
   volumeLevel,
   setVolumeLevel,
+  showLeftSidebar
 }) {
   const [showPlayModeOptions, setShowPlayModeOptions] = useState(false);
   const [showVolumeOptions, setShowVolumeOptions] = useState(false);
-
   const handleVolumeChange = (event) => {
     setVolumeLevel(parseFloat(event.target.value));
   };
+  if (!showLeftSidebar) return null;
 
   return (
     <div className="leftSidebar">
@@ -85,3 +86,4 @@ function LeftSidebar({
 }
 
 export default LeftSidebar;
+
