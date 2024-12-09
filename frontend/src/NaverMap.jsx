@@ -4,10 +4,11 @@ import drowsy_driving_icon from "./assets/drowsy_driving_icon.png";
 function NaverMap({ drowsyDetected }) {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState(null);
   const currentPolylineRef = useRef(null);
   const restStopMarkersRef = useRef([]);
-  const userMarkerRef = useRef(null);
+
+  // 고정된 출발지
+  const fixedStartLocation = { lat: 35.132849, lng: 129.106965 };
 
   const restStops = [
     { name: "서부산휴게소", lat: 35.157258, lng: 128.948777 },
@@ -32,69 +33,29 @@ function NaverMap({ drowsyDetected }) {
 
     const initializeMap = () => {
       const mapOptions = {
-        center: new window.naver.maps.LatLng(35.157258, 128.948777),
+        center: new window.naver.maps.LatLng(fixedStartLocation.lat, fixedStartLocation.lng),
         zoom: 10,
       };
       const newMap = new window.naver.maps.Map(mapRef.current, mapOptions);
       setMap(newMap);
+
+      // 고정된 출발지에 이미지 추가
+      new window.naver.maps.Marker({
+        map: newMap,
+        position: new window.naver.maps.LatLng(fixedStartLocation.lat, fixedStartLocation.lng),
+        icon: {
+          content: `<div style="width:50px;height:50px;background:url(${drowsy_driving_icon}) no-repeat center/contain;"></div>`,
+          anchor: new window.naver.maps.Point(25, 25),
+        },
+      });
     };
 
     loadMapScript();
   }, []);
 
-  // 현재 위치 실시간 추적
-  useEffect(() => {
-    let watchId;
-    if (navigator.geolocation) {
-      watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCurrentLocation({ lat: latitude, lng: longitude });
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-        },
-        { enableHighAccuracy: true, maximumAge: 1000 }
-      );
-    }
-
-    return () => {
-      if (navigator.geolocation && watchId !== undefined) {
-        navigator.geolocation.clearWatch(watchId);
-      }
-    };
-  }, []);
-
-  // 사용자 위치 마커 및 지도 중심 업데이트
-  useEffect(() => {
-    if (!map || !currentLocation) return;
-
-    // 기존 사용자 마커 제거
-    if (userMarkerRef.current) {
-      userMarkerRef.current.setMap(null);
-    }
-
-    // 새로운 사용자 마커 추가
-    const userMarker = new window.naver.maps.Marker({
-      map,
-      position: new window.naver.maps.LatLng(
-        currentLocation.lat,
-        currentLocation.lng
-      ),
-      icon: {
-        content: `<div style="width:50px;height:50px;background:url(${drowsy_driving_icon}) no-repeat center/contain;"></div>`,
-        anchor: new window.naver.maps.Point(25, 25),
-      },
-    });
-    userMarkerRef.current = userMarker;
-
-    // 지도 중심을 현재 위치로 이동
-    map.setCenter(new window.naver.maps.LatLng(currentLocation.lat, currentLocation.lng));
-  }, [map, currentLocation]);
-
   // 졸음운전 감지 시 휴게소 마커 표시
   useEffect(() => {
-    if (!map || !currentLocation) return;
+    if (!map) return;
 
     // 졸음운전이 감지되지 않았으면 휴게소 마커 제거
     if (!drowsyDetected) {
@@ -107,7 +68,7 @@ function NaverMap({ drowsyDetected }) {
     if (restStopMarkersRef.current.length > 0) return;
 
     // 휴게소 마커 추가
-    restStops.forEach((그만) => {
+    restStops.forEach((stop) => {
       const marker = new window.naver.maps.Marker({
         map,
         position: new window.naver.maps.LatLng(stop.lat, stop.lng),
@@ -117,16 +78,12 @@ function NaverMap({ drowsyDetected }) {
       restStopMarkersRef.current.push(marker);
 
       window.naver.maps.Event.addListener(marker, "click", async () => {
-        if (currentPolylineRef.current) {
-          currentPolylineRef.current.setMap(null);
-        }
-
-        const origin = `${currentLocation.lng},${currentLocation.lat}`;
+        const origin = `${fixedStartLocation.lng},${fixedStartLocation.lat}`;
         const destination = `${stop.lng},${stop.lat}`;
         await fetchRouteData(origin, destination);
       });
     });
-  }, [map, currentLocation, drowsyDetected]);
+  }, [map, drowsyDetected]);
 
   // 경로 데이터 요청 및 지도에 경로 표시
   const fetchRouteData = async (origin, destination) => {

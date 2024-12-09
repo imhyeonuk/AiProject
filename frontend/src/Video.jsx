@@ -7,7 +7,7 @@ import place_holder from './assets/place_holder.webp';
 import './Video.css';
 import { Rnd } from 'react-rnd';
 
-function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setPopupMessage }) {
+function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setPopupMessage, setCo2Level }) {
   const [isAlertActive, setIsAlertActive] = useState(false);
   const alarmAudioRef = useRef(new Audio(alertSound));
   const emergencyVoiceAudioRef = useRef(new Audio(emergencyVoiceAlertSound));
@@ -20,39 +20,35 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setPopupMe
   const videoFeedUrl = 'http://192.168.0.6:8000/video_feed'; // FastAPI 비디오 스트림 URL
   const fastApiUrl = 'http://192.168.0.6:8000/prediction'; // FastAPI 예측 값 URL
 
+  // 비디오 피드 초기화
   useEffect(() => {
-    // 이미지 소스를 비디오 피드 URL로 설정
-    setImgSrc(videoFeedUrl);
+    setImgSrc(videoFeedUrl); // FastAPI 비디오 스트림 URL 설정
   }, []);
 
+  // CO2 값 및 예측 신호 가져오기
   useEffect(() => {
     const interval = setInterval(() => {
       if (isAlertActive) return;
 
-      // FastAPI에서 예측 값 가져오기
       fetch(fastApiUrl)
         .then((response) => response.json())
         .then((jsonData) => {
-          const classification = jsonData.classification; // FastAPI에서 반환된 예측 값
-          console.log('FastAPI 신호 값:', classification);
-          handleSignal(classification);
+          const classification = jsonData.classification;
+          const co2Level = jsonData.co2;
+          console.log('FastAPI 신호 값:', classification, 'CO2 값:', co2Level);
+          setCo2Level(co2Level); // CO2 값을 상위 컴포넌트로 전달
+          handleSignal(classification, co2Level);
         })
         .catch((error) => {
           console.error('FastAPI Fetch Error:', error);
         });
-
-      // 개발 중 랜덤 신호 생성 코드 (주석 해제 시 활성화)
-      /*
-      const classification = generateMockSignal();
-      console.log('모의 신호 값:', classification);
-      handleSignal(classification);
-      */
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isAlertActive]);
+  }, [isAlertActive, setCo2Level]);
 
-  const handleSignal = (classification) => {
+  // 신호 처리
+  const handleSignal = (classification, co2Level) => {
     if (classification === 0) {
       console.log('정상 상태: 운전자 이상 행동이 없습니다.');
       setPopupMessage('');
@@ -82,8 +78,17 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setPopupMe
         };
       });
     }
+
+    if (co2Level > 1000) {
+      console.log('CO2 농도가 위험 수준입니다! 환기를 권장합니다.');
+      setPopupMessage('CO2 농도가 위험 수준입니다! 환기를 권장합니다.');
+    } else if (co2Level > 800) {
+      console.log('CO2 농도가 높습니다. 주의하세요.');
+      setPopupMessage('CO2 농도가 높습니다. 주의하세요.');
+    }
   };
 
+  // 알림 재생
   const playAlert = (onEndCallback) => {
     if (playMode === 'alarm') {
       alarmAudioRef.current.play();
@@ -94,12 +99,7 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setPopupMe
     }
   };
 
-  const generateMockSignal = () => {
-    const signals = [0, 1, 2];
-    return signals[Math.floor(Math.random() * signals.length)];
-  };
-
-  // volumeLevel 변경 시 오디오 볼륨 업데이트
+  // 볼륨 조정
   useEffect(() => {
     alarmAudioRef.current.volume = volumeLevel;
     emergencyVoiceAudioRef.current.volume = volumeLevel;
