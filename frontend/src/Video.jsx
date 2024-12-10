@@ -115,35 +115,55 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
 
   return (
     <Rnd
-      default={{
-        x: window.innerWidth * 0.66,
-        y: window.innerHeight * 0.5,
-        width: window.innerWidth * 0.33,
-        height: window.innerHeight * 0.5,
-      }}
-      bounds="parent"
-      style={{ position: 'absolute', zIndex: 1000, display: isVisible ? 'block' : 'none' }}
-      enableResizing={{
-        top: false,
-        right: false,
-        bottom: false,
-        left: false,
-        topRight: false,
-        bottomRight: false,
-        bottomLeft: false,
-        topLeft: true,
-      }}
-    >
-      <div className="videoContainer">
-        <img
-          ref={imageRef}
-          src={imgSrc}
-          alt="Video Stream"
-          className="videoImage"
-          onError={() => setImgSrc(place_holder)}
-        />
-      </div>
-    </Rnd>
+  default={{
+    x: window.innerWidth * 0.66,
+    y: window.innerHeight * 0.5,
+    width: window.innerWidth * 0.33,
+    height: window.innerHeight * 0.5,
+  }}
+  bounds="parent"
+  style={{
+    position: 'absolute',
+    zIndex: 1000,
+    display: isVisible ? 'block' : 'none',
+    touchAction: 'none', // 터치 이벤트 활성화
+  }}
+  enableResizing={{
+    top: false,
+    right: false,
+    bottom: false,
+    left: false,
+    topRight: false,
+    bottomRight: false,
+    bottomLeft: false,
+    topLeft: true, // 왼쪽 위 핸들만 활성화
+  }}
+  resizeHandleStyles={{
+    topLeft: {
+      width: '20px',
+      height: '20px',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // 핸들 스타일 설정
+      borderRadius: '50%',
+      cursor: 'nwse-resize',
+    },
+  }}
+  onResize={(e, direction, ref, delta, position) => {
+    // 크기 조정 후 위치 및 크기 조정
+    ref.style.width = `${ref.offsetWidth}px`;
+    ref.style.height = `${ref.offsetHeight}px`;
+  }}
+>
+  <div className="videoContainer">
+    <img
+      ref={imageRef}
+      src={imgSrc}
+      alt="Video Stream"
+      className="videoImage"
+      onError={() => setImgSrc(place_holder)}
+    />
+  </div>
+</Rnd>
+
   );
 }
 
