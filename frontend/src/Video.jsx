@@ -18,40 +18,57 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
   const [imgSrc, setImgSrc] = useState(place_holder); // Placeholder 이미지
   const imageRef = useRef(null);
 
-  // FastAPI URL
-  const videoFeedUrl = 'http://192.168.0.6:8000/video_feed'; // FastAPI 비디오 스트림 URL
-  const fastApiUrl = 'http://192.168.0.6:8000/prediction'; // FastAPI 예측 값 URL
-
+  // FastAPI URLs
+  const videoFeedUrl = 'http://172.20.10.2:8000/video_feed'; // FastAPI 비디오 스트림 URL
+  const fastApiUrl = 'http://172.20.10.2:8000/prediction'; // FastAPI 예측 값 URL (classification)
+  const co2Url = "http://172.20.10.2:8000/co2"; // FastAPI CO2 값 URL
+  
   // 비디오 피드 초기화
   useEffect(() => {
     setImgSrc(videoFeedUrl); // FastAPI 비디오 스트림 URL 설정
   }, []);
 
-  // CO2 값 및 예측 신호 가져오기
+  // CO2 값 가져오기
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (isAlertActive) return;
-
-      fetch(fastApiUrl)
-        .then((response) => response.json())
-        .then((jsonData) => {
-          const classification = jsonData.classification;
-          const co2Level = jsonData.co2;
-          console.log('FastAPI 신호 값:', classification, 'CO2 값:', co2Level);
-          setCo2Level(co2Level); // CO2 값을 상위 컴포넌트로 전달
-          handleSignal(classification, co2Level);
+    const co2Interval = setInterval(() => {
+      fetch(co2Url)
+        .then(response => response.json())
+        .then(data => {
+          const co2Level = data.co2;
+          console.log('CO2 값:', co2Level);
+          setCo2Level(co2Level);
+          handleCo2Signal(co2Level);
         })
-        .catch((error) => {
-          console.error('FastAPI Fetch Error:', error);
+        .catch(error => {
+          console.error('CO2 Fetch Error:', error);
         });
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [isAlertActive, setCo2Level]);
+    return () => clearInterval(co2Interval);
+  }, [setCo2Level]);
 
-  // 신호 처리
-  const handleSignal = (classification, co2Level) => {
-    // 졸음운전 관련 메시지 처리
+  // 분류(classification) 값 가져오기
+  useEffect(() => {
+    const predictionInterval = setInterval(() => {
+      if (isAlertActive) return;
+
+      fetch(fastApiUrl)
+        .then(response => response.json())
+        .then(jsonData => {
+          const classification = jsonData.classification;
+          console.log('Classification:', classification);
+          handleClassificationSignal(classification);
+        })
+        .catch(error => {
+          console.error('Prediction Fetch Error:', error);
+        });
+    }, 1000);
+
+    return () => clearInterval(predictionInterval);
+  }, [isAlertActive]);
+
+  // 분류 신호 처리
+  const handleClassificationSignal = (classification) => {
     if (classification === 0) {
       console.log('정상 상태: 운전자 이상 행동이 없습니다.');
       setDrowsyPopupMessage('');
@@ -81,14 +98,18 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
         };
       });
     }
+  };
 
-    // CO2 관련 메시지 처리
+  // CO2 신호 처리
+  const handleCo2Signal = (co2Level) => {
     if (co2Level > 2000) {
       console.log('CO2 농도가 위험 수준입니다! 환기를 권장합니다.');
       setCo2PopupMessage('CO2 농도가 위험 수준입니다! 환기를 권장합니다.');
+      // 추가적인 알림이나 행동을 원한다면 여기서 처리
     } else if (co2Level > 1600) {
       console.log('CO2 농도가 높습니다. 주의하세요.');
       setCo2PopupMessage('CO2 농도가 높습니다. 주의하세요.');
+      // 추가적인 알림이나 행동을 원한다면 여기서 처리
     } else {
       setCo2PopupMessage('');
     }
@@ -115,55 +136,54 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
 
   return (
     <Rnd
-  default={{
-    x: window.innerWidth * 0.66,
-    y: window.innerHeight * 0.5,
-    width: window.innerWidth * 0.33,
-    height: window.innerHeight * 0.5,
-  }}
-  bounds="parent"
-  style={{
-    position: 'absolute',
-    zIndex: 1000,
-    display: isVisible ? 'block' : 'none',
-    touchAction: 'none', // 터치 이벤트 활성화
-  }}
-  enableResizing={{
-    top: false,
-    right: false,
-    bottom: false,
-    left: false,
-    topRight: false,
-    bottomRight: false,
-    bottomLeft: false,
-    topLeft: true, // 왼쪽 위 핸들만 활성화
-  }}
-  resizeHandleStyles={{
-    topLeft: {
-      width: '20px',
-      height: '20px',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', // 핸들 스타일 설정
-      borderRadius: '50%',
-      cursor: 'nwse-resize',
-    },
-  }}
-  onResize={(e, direction, ref, delta, position) => {
-    // 크기 조정 후 위치 및 크기 조정
-    ref.style.width = `${ref.offsetWidth}px`;
-    ref.style.height = `${ref.offsetHeight}px`;
-  }}
->
-  <div className="videoContainer">
-    <img
-      ref={imageRef}
-      src={imgSrc}
-      alt="Video Stream"
-      className="videoImage"
-      onError={() => setImgSrc(place_holder)}
-    />
-  </div>
-</Rnd>
-
+      default={{
+        x: window.innerWidth * 0.66,
+        y: window.innerHeight * 0.5,
+        width: window.innerWidth * 0.33,
+        height: window.innerHeight * 0.5,
+      }}
+      bounds="parent"
+      style={{
+        position: 'absolute',
+        zIndex: 1000,
+        display: isVisible ? 'block' : 'none',
+        touchAction: 'none', // 터치 이벤트 활성화
+      }}
+      enableResizing={{
+        top: false,
+        right: false,
+        bottom: false,
+        left: false,
+        topRight: false,
+        bottomRight: false,
+        bottomLeft: false,
+        topLeft: true, // 왼쪽 위 핸들만 활성화
+      }}
+      resizeHandleStyles={{
+        topLeft: {
+          width: '20px',
+          height: '20px',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', // 핸들 스타일 설정
+          borderRadius: '50%',
+          cursor: 'nwse-resize',
+        },
+      }}
+      onResize={(e, direction, ref, delta, position) => {
+        // 크기 조정 후 위치 및 크기 조정
+        ref.style.width = `${ref.offsetWidth}px`;
+        ref.style.height = `${ref.offsetHeight}px`;
+      }}
+    >
+      <div className="videoContainer">
+        <img
+          ref={imageRef}
+          src={imgSrc}
+          alt="Video Stream"
+          className="videoImage"
+          onError={() => setImgSrc(place_holder)}
+        />
+      </div>
+    </Rnd>
   );
 }
 
