@@ -47,9 +47,9 @@ while camera_index < 10:  # 최대 10개의 카메라까지 시도
 model = YOLO("best.pt")
 
 # 전역 변수
-classification = {"classification": 0, "co2": 0}
+classification = {"classification": 0}
 detection_queue = deque(maxlen=5)
-co2_value = None
+co2_value = {"co2" : 0}
 stop_event = threading.Event()
 serial_lock = threading.Lock()
 
@@ -62,7 +62,7 @@ def read_co2():
                 try:
                     data = ser.readline().decode('utf-8').strip()
                     if data.startswith("CO2:"):
-                        co2_value = int(data.replace("CO2:", "").strip())
+                        co2_value["co2"] = int(data.replace("CO2:", "").strip())
                         print(f"Received CO2: {co2_value}")
                 except serial.SerialException as e:
                     print(f"Serial read error: {e}")
@@ -159,12 +159,15 @@ async def get_classification_endpoint():
         success, frame = camera.read()
         if success:
             predict(frame)
-            classification["co2"] = co2_value
             write_prediction(classification["classification"])
-            classification["classification"] = 0
     else:
         print("Camera is not opened or unavailable.")
     return JSONResponse(content=classification)
+
+# co2 보내주기
+@app.get("/co2")
+async def get_co2() :
+    return JSONResponse(content=co2_value)
 
 # 비디오 스트리밍
 @app.get("/video_feed")
