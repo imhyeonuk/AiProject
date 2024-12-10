@@ -1,3 +1,5 @@
+// App.jsx
+
 import { useState } from 'react';
 import Video from './Video.jsx';
 import NaverMap from './NaverMap.jsx';
@@ -12,7 +14,8 @@ function App() {
   const [isVideoVisible, setIsVideoVisible] = useState(true); // 초기값 true로 설정
   const [playMode, setPlayMode] = useState('alarm');
   const [volumeLevel, setVolumeLevel] = useState(0.5);
-  const [popupMessage, setPopupMessage] = useState(''); // popupMessage 상태 추가
+  const [drowsyPopupMessage, setDrowsyPopupMessage] = useState(''); // 졸음운전 팝업 메시지 상태
+  const [co2PopupMessage, setCo2PopupMessage] = useState(''); // CO2 팝업 메시지 상태
   const [showLeftSidebar, setShowLeftSidebar] = useState(true); // 버튼클릭시 버튼4개 사라지기 켜지기 기능
   const [co2Level, setCo2Level] = useState(0); // CO2 상태 추가
 
@@ -22,7 +25,8 @@ function App() {
     setPlayMode('alarm');
     setVolumeLevel(0.5);
     setDrowsyDetected(false);
-    setPopupMessage('');
+    setDrowsyPopupMessage('');
+    setCo2PopupMessage('');
   };
 
   const toggleVideoVisibility = () => {
@@ -47,13 +51,22 @@ function App() {
             isVisible={isVideoVisible}
             playMode={playMode}
             volumeLevel={volumeLevel}
-            setPopupMessage={setPopupMessage} // setPopupMessage 전달
-            setCo2Level={setCo2Level} // setCo2Level 전달
+            setDrowsyPopupMessage={setDrowsyPopupMessage} // 졸음운전 팝업 설정 함수 전달
+            setCo2PopupMessage={setCo2PopupMessage} // CO2 팝업 설정 함수 전달
+            setCo2Level={setCo2Level} // CO2 값 전달
           />
 
-          {popupMessage && (
-            <div className="mapPopupMessage">
-              {popupMessage}
+          {/* 졸음운전 팝업 메시지 */}
+          {drowsyPopupMessage && (
+            <div className="drowsyPopupMessage">
+              {drowsyPopupMessage}
+            </div>
+          )}
+
+          {/* CO2 경고 팝업 메시지 */}
+          {co2PopupMessage && (
+            <div className="co2PopupMessage">
+              {co2PopupMessage}
             </div>
           )}
 

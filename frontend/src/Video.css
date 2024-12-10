@@ -10,15 +10,30 @@
   object-fit: cover;
 }
 
-.popupMessage {
+.drowsyPopupMessage {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  padding: 10px;
+  max-width: 400px;
+  padding: 15px;
   background-color: rgba(255, 0, 0, 0.8);
   color: white;
   border-radius: 8px;
   text-align: center;
+  z-index: 1001; /* 비디오보다 위에 표시 */
+}
+
+.co2PopupMessage {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 250px;
+  padding: 10px;
+  background-color: rgba(0, 128, 0, 0.8); /* 녹색 계열로 CO2 경고 구분 */
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+  z-index: 1001; /* 비디오보다 위에 표시 */
 }
