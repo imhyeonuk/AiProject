@@ -26,9 +26,6 @@ classification = {"classification": 0}  # 0: 정상, 1: 긴급, 2: 의심
 # Detection 결과 저장용 큐
 detection_queue = deque(maxlen=5)
 
-# 아두이노에 신호 보내기(아두이노 코드의 효율성을 위해 특수 문자로 보냄, '|' : 0, '~' : 1, '$' : 2)
-state = ['|', '~', '$']
-
 
 # Classification 대분류 설정 함수
 def get_classification(detection_list):
