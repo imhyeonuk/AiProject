@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Loading.css'; // CSS 파일
-import joloApp from './assets/ZOLO.png'; // JOLO 어플리케이션 이미지
+import joloApp from './assets/JOLO.png'; // JOLO 어플리케이션 이미지
 import fakeApp1 from './assets/1-removebg-preview.png';
 import fakeApp2 from './assets/2-removebg-preview.png';
 import fakeApp3 from './assets/3-removebg-preview.png';

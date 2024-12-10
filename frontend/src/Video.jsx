@@ -79,10 +79,10 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setPopupMe
       });
     }
 
-    if (co2Level > 1000) {
+    if (co2Level > 2000) {
       console.log('CO2 농도가 위험 수준입니다! 환기를 권장합니다.');
       setPopupMessage('CO2 농도가 위험 수준입니다! 환기를 권장합니다.');
-    } else if (co2Level > 800) {
+    } else if (co2Level > 1600) {
       console.log('CO2 농도가 높습니다. 주의하세요.');
       setPopupMessage('CO2 농도가 높습니다. 주의하세요.');
     }
