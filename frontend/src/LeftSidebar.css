@@ -1,6 +1,6 @@
 .leftSidebar {
   position: absolute;
-  top: 40%;
+  top: 25%;
   left: 10px; /* 사이드로 약간 떨어뜨려서 여백 확보 */
   transform: translateY(-50%);
   display: flex;
