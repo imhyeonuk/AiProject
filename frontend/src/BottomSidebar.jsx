@@ -31,7 +31,7 @@ const BottomSidebar = ({ onHomeClick, isVideoVisible, toggleVideoVisibility, pla
       <div className="section address-section">
         <div className="address-content">
           <i className="fas fa-building"></i>
-          <span>부산광역시 남구 용소로 45 부경대학교 소민홀</span>
+          <span style={{fontSize:'16px'}}  >부산광역시 남구 용소로 45<br/>부경대학교 창의관</span>
         </div>
       </div>
     </div>
