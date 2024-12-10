@@ -47,7 +47,7 @@ function Loading({ onEnterApp }) {
           />
         ))}
       </div>
-      {isLoading && <div className="loading-overlay">로딩중.....</div>}
+      {isLoading && <div className="loading-overlay">Loading.....</div>}
     </div>
   );
 }

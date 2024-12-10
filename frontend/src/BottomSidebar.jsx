@@ -20,7 +20,7 @@ const BottomSidebar = ({ onHomeClick, isVideoVisible, toggleVideoVisibility, pla
 
       <div className="section co2-section">
         <div className="co2-display">
-          <span className="co2-label">CO2</span>
+          <span className="co2-label">CO<sub>2</sub></span>
           <span className={`co2-value ${co2Level > 1000 ? 'high' : co2Level > 800 ? 'medium' : 'low'}`}>
             {co2Level || 0}
           </span>
