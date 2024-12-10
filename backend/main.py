@@ -137,11 +137,11 @@ def get_classification(detection_list):
                     counts[2] += 1
 
     # 대분류 판단
-    if counts[1] > 2:
+    if counts[1] >= 2:
         classification["classification"] = 1 # 긴급
         for _ in range(4) :
             detection_queue.popleft()
-    elif counts[2] > 2:
+    elif counts[2] >= 2:
         classification["classification"] = 2   # 의심
         for _ in range(4) :
             detection_queue.popleft()
