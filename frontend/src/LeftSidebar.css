@@ -1,36 +1,62 @@
 .leftSidebar {
   position: absolute;
   top: 50%;
-  left: 0;
+  left: 20px; /* 사이드로 약간 떨어뜨려서 여백 확보 */
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 20px; /* 아이콘 간 간격 조정 */
   z-index: 1000;
 }
 
+/* 각 아이콘을 카드 형태로 나타내는 스타일 */
 .iconButton {
-  background: none;
+  background: rgba(255, 255, 255, 0.95);
+  width: 60px;
+  height: 60px;
   border: none;
-  font-size: 24px;
-  margin: 15px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+  position: relative; /* 옵션 메뉴를 위한 위치 설정 */
 }
 
+.iconButton:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.05);
+}
+
+/* 아이콘 크기 조정 */
+.iconButton i,
+.iconButton svg {
+  font-size: 24px;
+  color: #333;
+}
+
+/* .iconWrapper에 position: relative 추가 */
 .iconWrapper {
   position: relative;
 }
 
+/* 옵션 메뉴를 오른쪽에 배치하도록 수정 */
 .options,
 .volumeOptions {
   position: absolute;
-  left: 50px;
-  top: -10px;
-  display: flex;
+  left: 100%; /* 메인 버튼의 오른쪽 끝에 위치 */
+  top: 50%; /* 메인 버튼의 중앙에 정렬 */
+  transform: translateY(-50%);
+  margin-left: 10px; /* 메인 버튼과 옵션 메뉴 간의 간격 */
+  display: flex; /* React에서 조건부 렌더링으로 제어 */
   flex-direction: column;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 5px;
   padding: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* 옵션 메뉴에 약간의 그림자 추가 */
+  min-width: 50px; /* 옵션 메뉴의 최소 너비 설정 */
 }
 
 .options .iconButton,
