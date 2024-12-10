@@ -143,7 +143,7 @@ def get_classification(detection_list):
             detection_queue.popleft()
     elif counts[2] > 2:
         classification["classification"] = 2   # 의심
-        for _ in range(5) :
+        for _ in range(4) :
             detection_queue.popleft()
     else:
         classification["classification"] = 0  # 정상
@@ -161,6 +161,7 @@ async def get_classification_endpoint():
             predict(frame)
             classification["co2"] = co2_value
             write_prediction(classification["classification"])
+            classification["classification"] = 0
     else:
         print("Camera is not opened or unavailable.")
     return JSONResponse(content=classification)
