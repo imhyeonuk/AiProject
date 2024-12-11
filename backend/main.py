@@ -62,7 +62,7 @@ def read_co2():
                 try:
                     data = ser.readline().decode('utf-8').strip()
                     if data.startswith("CO2:"):
-                        co2_value["co2"] = int(data.replace("CO2:", "").strip())
+                        co2_value["co2"]= int(data.replace("CO2:", "").strip())
                         print(f"Received CO2: {co2_value}")
                 except serial.SerialException as e:
                     print(f"Serial read error: {e}")
@@ -155,6 +155,7 @@ def get_classification(detection_list):
 async def get_classification_endpoint():
     """최신 Classification 값을 반환"""
     global classification
+    classification["classification"] = 0
     if camera and camera.isOpened():
         success, frame = camera.read()
         if success:
@@ -167,6 +168,7 @@ async def get_classification_endpoint():
 # co2 보내주기
 @app.get("/co2")
 async def get_co2() :
+    global co2_value
     return JSONResponse(content=co2_value)
 
 # 비디오 스트리밍
