@@ -103,17 +103,17 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
   // CO2 신호 처리
   const handleCo2Signal = (co2Level) => {
     if (co2Level > 2000) {
-      console.log('CO2 농도가 위험 수준입니다! 환기를 권장합니다.');
-      setCo2PopupMessage('CO2 농도가 위험 수준입니다! 환기를 권장합니다.');
-      // 추가적인 알림이나 행동을 원한다면 여기서 처리
+        console.log('CO2 농도가 위험 수준입니다!\n환기를 권장합니다.');
+        setCo2PopupMessage('CO2 농도가 위험 수준입니다!\n환기를 권장합니다.');
+        // 추가적인 알림이나 행동을 원한다면 여기서 처리
     } else if (co2Level > 1600) {
-      console.log('CO2 농도가 높습니다. 주의하세요.');
-      setCo2PopupMessage('CO2 농도가 높습니다. 주의하세요.');
-      // 추가적인 알림이나 행동을 원한다면 여기서 처리
+        console.log('CO2 농도가 높습니다. 주의하세요.');
+        setCo2PopupMessage('CO2 농도가 높습니다. 주의하세요.');
+        // 추가적인 알림이나 행동을 원한다면 여기서 처리
     } else {
-      setCo2PopupMessage('');
+        setCo2PopupMessage('');
     }
-  };
+};
 
   // 알림 재생
   const playAlert = (onEndCallback) => {

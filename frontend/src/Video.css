@@ -36,4 +36,5 @@
   border-radius: 8px;
   text-align: center;
   z-index: 1001; /* 비디오보다 위에 표시 */
+  white-space: pre-line; /* 줄바꿈 적용 */
 }
