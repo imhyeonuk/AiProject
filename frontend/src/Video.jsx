@@ -19,9 +19,9 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
   const imageRef = useRef(null);
 
   // FastAPI URLs
-  const videoFeedUrl = 'http://192.168.0.6/video_feed'; // FastAPI 비디오 스트림 URL
-  const fastApiUrl = 'http://192.168.0.6/prediction'; // FastAPI 예측 값 URL (classification)
-  const co2Url = "http://192.168.0.6/co2"; // FastAPI CO2 값 URL
+  const videoFeedUrl = 'http://192.168.0.6:8000/video_feed'; // FastAPI 비디오 스트림 URL
+  const fastApiUrl = 'http://192.168.0.6:8000/prediction'; // FastAPI 예측 값 URL (classification)
+  const co2Url = "http://192.168.0.6:8000/co2"; // FastAPI CO2 값 URL
   
   // 비디오 피드 초기화
   useEffect(() => {
@@ -194,7 +194,7 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
   />
   {isAlertActive && (
     <div>
-      {drowsyPopupMessage}
+      {setDrowsyPopupMessage}
     </div>
   )}
 </div>
