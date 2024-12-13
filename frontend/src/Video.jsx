@@ -19,9 +19,9 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
   const imageRef = useRef(null);
 
   // FastAPI URLs
-  const videoFeedUrl = 'http://172.20.10.2:8000/video_feed'; // FastAPI 비디오 스트림 URL
-  const fastApiUrl = 'http://172.20.10.2:8000/prediction'; // FastAPI 예측 값 URL (classification)
-  const co2Url = "http://172.20.10.2:8000/co2"; // FastAPI CO2 값 URL
+  const videoFeedUrl = 'http://192.168.0.6/video_feed'; // FastAPI 비디오 스트림 URL
+  const fastApiUrl = 'http://192.168.0.6/prediction'; // FastAPI 예측 값 URL (classification)
+  const co2Url = "http://192.168.0.6/co2"; // FastAPI CO2 값 URL
   
   // 비디오 피드 초기화
   useEffect(() => {
@@ -75,7 +75,11 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
       setDrowsyDetected(false);
     } else if (classification === 1) {
       console.log('졸음운전 중입니다. 환기를 하십시오.');
-      setDrowsyPopupMessage('졸음운전 중입니다. 환기를 하십시오.');
+      setDrowsyPopupMessage(
+        <div className="drowsyPopupMessage emergency">
+          졸음운전 중입니다. 환기를 하십시오.
+        </div>
+      );
       setIsAlertActive(true);
       setDrowsyDetected(true);
       playAlert(() => {
@@ -87,7 +91,11 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
       });
     } else if (classification === 2) {
       console.log('졸음운전이 의심됩니다. 주의하세요.');
-      setDrowsyPopupMessage('졸음운전이 의심됩니다. 주의하세요.');
+      setDrowsyPopupMessage(
+        <div className="drowsyPopupMessage suspicion">
+          졸음운전이 의심됩니다. 주의하세요.
+        </div>
+      );
       setIsAlertActive(true);
       setDrowsyDetected(true);
       playAlert(() => {
@@ -99,6 +107,7 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
       });
     }
   };
+  
 
   // CO2 신호 처리
   const handleCo2Signal = (co2Level) => {
@@ -174,15 +183,22 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
         ref.style.height = `${ref.offsetHeight}px`;
       }}
     >
-      <div className="videoContainer">
-        <img
-          ref={imageRef}
-          src={imgSrc}
-          alt="Video Stream"
-          className="videoImage"
-          onError={() => setImgSrc(place_holder)}
-        />
-      </div>
+    
+    <div className="videoContainer">
+  <img
+    ref={imageRef}
+    src={imgSrc}
+    alt="Video Stream"
+    className="videoImage"
+    onError={() => setImgSrc(place_holder)}
+  />
+  {isAlertActive && (
+    <div>
+      {drowsyPopupMessage}
+    </div>
+  )}
+</div>
+
     </Rnd>
   );
 }
