@@ -62,7 +62,7 @@ def read_co2():
                 try:
                     data = ser.readline().decode('utf-8').strip()
                     if data.startswith("CO2:"):
-                        co2_value["co2"] = int(data.replace("CO2:", "").strip())
+                        co2_value["co2"]= int(data.replace("CO2:", "").strip())
                         print(f"Received CO2: {co2_value}")
                 except serial.SerialException as e:
                     print(f"Serial read error: {e}")
@@ -153,36 +153,36 @@ def get_classification(detection_list):
 # /prediction 엔드포인트
 @app.get("/prediction")
 async def get_classification_endpoint():
-    """최신 Classification 값을 반환"""
-    global classification
-    if camera and camera.isOpened():
-        success, frame = camera.read()
-        if success:
-            predict(frame)
+    global classification # 전역 변수 classification를 함수 내로 끌고 오기
+    classification["classification"] = 0 # classification 초기화
+    if camera and camera.isOpened(): # camera 켜짐 유무 확인 후 프레임을 받음
+        success, frame = camera.read() 
+        if success: # 프레임을 잘 읽었다면 프레임을 ai 모델에 집어 넣고 classification 변수에 예측값을 저장 후 이를 아두이노로 보냄
+            predict(frame) 
             write_prediction(classification["classification"])
     else:
-        print("Camera is not opened or unavailable.")
-    return JSONResponse(content=classification)
+        print("Camera is not opened or unavailable.") 
+    return JSONResponse(content=classification) # 프론트엔드에 Json 파일 형식으로 보냄
 
 # co2 보내주기
 @app.get("/co2")
 async def get_co2() :
-    return JSONResponse(content=co2_value)
+    global co2_value # 전역 변수 co2_value를 함수 내로 끌고 오기
+    return JSONResponse(content=co2_value) # 프론트엔드에 Json 파일 형식으로 보냄
 
 # 비디오 스트리밍
 @app.get("/video_feed")
 async def video_feed():
     def generate_frames():
-        while not stop_event.is_set():
+        while not stop_event.is_set(): # 이벤트가 설정되었는지 여부 확인 후 카메라로부터 frame을 받음
             success, frame = camera.read()
-            if not success:
+            if not success: # 카메라가 꺼져있으면 반복문을 끝냄
                 break
-            predict(frame)
-            _, buffer = cv2.imencode('.jpg', frame)
+            _, buffer = cv2.imencode('.jpg', frame) # frame을 '.jpg' 파일 형식으로 바꿈
             yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+                   b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n') # frame을 산출
 
-    return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
+    return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame") # StreamingResponse로 frame을 보냄
 
 # 서버 시작 시 스레드 실행
 def start_threads():
