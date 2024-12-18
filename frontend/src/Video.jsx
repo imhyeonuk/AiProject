@@ -1,3 +1,5 @@
+// Video.jsx
+
 import { useEffect, useRef, useState } from 'react';
 import alertSound from './assets/red-alert_nuclear_buzzer-99741.mp3';
 import emergencyVoiceAlertSound from './assets/emergency_voice_alert.m4a';
@@ -7,9 +9,18 @@ import place_holder from './assets/place_holder.webp';
 import './Video.css';
 import { Rnd } from 'react-rnd';
 
-function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setCo2PopupMessage, setCo2Level }) {
+function Video({
+  setDrowsyDetected,
+  isVisible,
+  playMode,
+  volumeLevel,
+  drowsyPopupMessage,
+  setDrowsyPopupMessage,
+  co2PopupMessage,
+  setCo2PopupMessage,
+  setCo2Level
+}) {
   const [isAlertActive, setIsAlertActive] = useState(false);
-  const [drowsyPopupMessage, setDrowsyPopupMessage] = useState(''); // 추가된 상태
   const alarmAudioRef = useRef(new Audio(alertSound));
   const emergencyVoiceAudioRef = useRef(new Audio(emergencyVoiceAlertSound));
   const suspicionVoiceAudioRef = useRef(new Audio(suspicionVoiceAlertSound));
@@ -18,13 +29,13 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setCo2Popu
   const imageRef = useRef(null);
 
   // FastAPI URLs
-  const videoFeedUrl = 'http://192.168.0.196:8000/video_feed'; // FastAPI 비디오 스트림 URL
-  const fastApiUrl = 'http://192.168.0.196:8000/prediction'; // FastAPI 예측 값 URL (classification)
-  const co2Url = "http://192.168.0.196:8000/co2"; // FastAPI CO2 값 URL
-  
+  const videoFeedUrl = 'http://192.168.0.196:8000/video_feed'; 
+  const fastApiUrl = 'http://192.168.0.196:8000/prediction'; 
+  const co2Url = "http://192.168.0.196:8000/co2"; 
+
   // 비디오 피드 초기화
   useEffect(() => {
-    setImgSrc(videoFeedUrl); // FastAPI 비디오 스트림 URL 설정
+    setImgSrc(videoFeedUrl);
   }, []);
 
   // CO2 값 가져오기
@@ -50,21 +61,16 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setCo2Popu
   useEffect(() => {
     const predictionInterval = setInterval(() => {
       if (isAlertActive) return;
-
-      fetch(fastApiUrl)
-        .then(response => response.json())
-        .then(jsonData => {
-          const classification = jsonData.classification;
-          console.log('Classification:', classification);
-          handleClassificationSignal(classification);
-        })
-        .catch(error => {
-          console.error('Prediction Fetch Error:', error);
-        });
+  
+      // 랜덤 신호 생성 (0, 1, 2 중 하나)
+      const classification = Math.floor(Math.random() * 3);
+      console.log('Random Classification:', classification);
+      handleClassificationSignal(classification);
     }, 1000);
-
+  
     return () => clearInterval(predictionInterval);
   }, [isAlertActive]);
+  
 
   // 분류 신호 처리
   const handleClassificationSignal = (classification) => {
@@ -74,7 +80,11 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setCo2Popu
       setDrowsyDetected(false);
     } else if (classification === 1) {
       console.log('졸음운전 중입니다. 환기를 하십시오.');
-      setDrowsyPopupMessage('졸음운전 중입니다. 환기를 하십시오.');
+      setDrowsyPopupMessage(
+        <div className="drowsyPopupMessage emergency">
+          졸음운전 중입니다. 환기를 하십시오.
+        </div>
+      );
       setIsAlertActive(true);
       setDrowsyDetected(true);
       playAlert(() => {
@@ -86,7 +96,11 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setCo2Popu
       });
     } else if (classification === 2) {
       console.log('졸음운전이 의심됩니다. 주의하세요.');
-      setDrowsyPopupMessage('졸음운전이 의심됩니다. 주의하세요.');
+      setDrowsyPopupMessage(
+        <div className="drowsyPopupMessage suspicion">
+          졸음운전이 의심됩니다. 주의하세요.
+        </div>
+      );
       setIsAlertActive(true);
       setDrowsyDetected(true);
       playAlert(() => {
@@ -179,7 +193,7 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setCo2Popu
           onError={() => setImgSrc(place_holder)}
         />
         {isAlertActive && (
-          <div className="drowsyPopupMessage">
+          <div>
             {drowsyPopupMessage}
           </div>
         )}
