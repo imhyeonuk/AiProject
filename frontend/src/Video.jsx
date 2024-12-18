@@ -1,5 +1,3 @@
-// Video.jsx
-
 import { useEffect, useRef, useState } from 'react';
 import alertSound from './assets/red-alert_nuclear_buzzer-99741.mp3';
 import emergencyVoiceAlertSound from './assets/emergency_voice_alert.m4a';
@@ -9,8 +7,9 @@ import place_holder from './assets/place_holder.webp';
 import './Video.css';
 import { Rnd } from 'react-rnd';
 
-function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyPopupMessage, setCo2PopupMessage, setCo2Level }) {
+function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setCo2PopupMessage, setCo2Level }) {
   const [isAlertActive, setIsAlertActive] = useState(false);
+  const [drowsyPopupMessage, setDrowsyPopupMessage] = useState(''); // 추가된 상태
   const alarmAudioRef = useRef(new Audio(alertSound));
   const emergencyVoiceAudioRef = useRef(new Audio(emergencyVoiceAlertSound));
   const suspicionVoiceAudioRef = useRef(new Audio(suspicionVoiceAlertSound));
@@ -19,9 +18,9 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
   const imageRef = useRef(null);
 
   // FastAPI URLs
-  const videoFeedUrl = 'http://192.168.0.6:8000/video_feed'; // FastAPI 비디오 스트림 URL
-  const fastApiUrl = 'http://192.168.0.6:8000/prediction'; // FastAPI 예측 값 URL (classification)
-  const co2Url = "http://192.168.0.6:8000/co2"; // FastAPI CO2 값 URL
+  const videoFeedUrl = 'http://192.168.0.196:8000/video_feed'; // FastAPI 비디오 스트림 URL
+  const fastApiUrl = 'http://192.168.0.196:8000/prediction'; // FastAPI 예측 값 URL (classification)
+  const co2Url = "http://192.168.0.196:8000/co2"; // FastAPI CO2 값 URL
   
   // 비디오 피드 초기화
   useEffect(() => {
@@ -75,11 +74,7 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
       setDrowsyDetected(false);
     } else if (classification === 1) {
       console.log('졸음운전 중입니다. 환기를 하십시오.');
-      setDrowsyPopupMessage(
-        <div className="drowsyPopupMessage emergency">
-          졸음운전 중입니다. 환기를 하십시오.
-        </div>
-      );
+      setDrowsyPopupMessage('졸음운전 중입니다. 환기를 하십시오.');
       setIsAlertActive(true);
       setDrowsyDetected(true);
       playAlert(() => {
@@ -91,11 +86,7 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
       });
     } else if (classification === 2) {
       console.log('졸음운전이 의심됩니다. 주의하세요.');
-      setDrowsyPopupMessage(
-        <div className="drowsyPopupMessage suspicion">
-          졸음운전이 의심됩니다. 주의하세요.
-        </div>
-      );
+      setDrowsyPopupMessage('졸음운전이 의심됩니다. 주의하세요.');
       setIsAlertActive(true);
       setDrowsyDetected(true);
       playAlert(() => {
@@ -107,22 +98,19 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
       });
     }
   };
-  
 
   // CO2 신호 처리
   const handleCo2Signal = (co2Level) => {
     if (co2Level > 2000) {
-        console.log('CO2 농도가 위험 수준입니다!\n환기를 권장합니다.');
-        setCo2PopupMessage('CO2 농도가 위험 수준입니다!\n환기를 권장합니다.');
-        // 추가적인 알림이나 행동을 원한다면 여기서 처리
+      console.log('CO2 농도가 위험 수준입니다!\n환기를 권장합니다.');
+      setCo2PopupMessage('CO2 농도가 위험 수준입니다!\n환기를 권장합니다.');
     } else if (co2Level > 1600) {
-        console.log('CO2 농도가 높습니다. 주의하세요.');
-        setCo2PopupMessage('CO2 농도가 높습니다. 주의하세요.');
-        // 추가적인 알림이나 행동을 원한다면 여기서 처리
+      console.log('CO2 농도가 높습니다. 주의하세요.');
+      setCo2PopupMessage('CO2 농도가 높습니다. 주의하세요.');
     } else {
-        setCo2PopupMessage('');
+      setCo2PopupMessage('');
     }
-};
+  };
 
   // 알림 재생
   const playAlert = (onEndCallback) => {
@@ -156,7 +144,7 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
         position: 'absolute',
         zIndex: 1000,
         display: isVisible ? 'block' : 'none',
-        touchAction: 'none', // 터치 이벤트 활성화
+        touchAction: 'none',
       }}
       enableResizing={{
         top: false,
@@ -166,39 +154,36 @@ function Video({ setDrowsyDetected, isVisible, playMode, volumeLevel, setDrowsyP
         topRight: false,
         bottomRight: false,
         bottomLeft: false,
-        topLeft: true, // 왼쪽 위 핸들만 활성화
+        topLeft: true,
       }}
       resizeHandleStyles={{
         topLeft: {
           width: '20px',
           height: '20px',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)', // 핸들 스타일 설정
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
           borderRadius: '50%',
           cursor: 'nwse-resize',
         },
       }}
       onResize={(e, direction, ref, delta, position) => {
-        // 크기 조정 후 위치 및 크기 조정
         ref.style.width = `${ref.offsetWidth}px`;
         ref.style.height = `${ref.offsetHeight}px`;
       }}
     >
-    
-    <div className="videoContainer">
-  <img
-    ref={imageRef}
-    src={imgSrc}
-    alt="Video Stream"
-    className="videoImage"
-    onError={() => setImgSrc(place_holder)}
-  />
-  {isAlertActive && (
-    <div>
-      {setDrowsyPopupMessage}
-    </div>
-  )}
-</div>
-
+      <div className="videoContainer">
+        <img
+          ref={imageRef}
+          src={imgSrc}
+          alt="Video Stream"
+          className="videoImage"
+          onError={() => setImgSrc(place_holder)}
+        />
+        {isAlertActive && (
+          <div className="drowsyPopupMessage">
+            {drowsyPopupMessage}
+          </div>
+        )}
+      </div>
     </Rnd>
   );
 }
